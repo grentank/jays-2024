@@ -1,7 +1,16 @@
 import React from 'react';
 import { Button, FloatingLabel, Form } from 'react-bootstrap';
+import axiosInstance from '../../axiosInstance';
+import useAppStore from '../../store/store';
 
-export default function AddChairForm({ addChairHandler }) {
+export default function AddChairForm() {
+  const addChair = useAppStore((store) => store.addChair);
+  const addChairHandler = async (formData) => {
+    const res = await axiosInstance.post('/chairs', formData);
+    if (res.status === 201) {
+      addChair(res.data);
+    }
+  };
   return (
     <Form
       onSubmit={(e) => {

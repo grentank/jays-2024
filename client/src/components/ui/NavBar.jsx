@@ -1,8 +1,17 @@
 import React from 'react';
 import { Button, Container, Nav, Navbar } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
+import useAppStore from '../../store/store';
+import axiosInstance, { setAccessToken } from '../../axiosInstance';
 
-export default function NavBar({ user, handleLogout }) {
+export default function NavBar() {
+  const user = useAppStore((store) => store.user);
+  const setUser = useAppStore((store) => store.setUser);
+  const handleLogout = () =>
+    axiosInstance('/auth/logout').then(() => {
+      setUser(null);
+      setAccessToken('');
+    });
   return (
     <Navbar bg="dark" data-bs-theme="dark">
       <Container>

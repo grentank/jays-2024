@@ -1,7 +1,20 @@
 import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
+import axiosInstance, { setAccessToken } from '../../axiosInstance';
+import useAppStore from '../../store/store';
 
-export default function LoginPage({ handleLogin }) {
+export default function LoginPage() {
+  const setUser = useAppStore((store) => store.setUser);
+  const handleLogin = async (formData) => {
+    try {
+      const res = await axiosInstance.post('/auth/login', formData);
+      setUser(res.data.user); // res.data = { user: {}, accessToken: '' }
+      setAccessToken(res.data.accessToken);
+    } catch (error) {
+      console.log(error);
+      alert(error.response.data.message);
+    }
+  };
   const [loading, setLoading] = useState(false);
   return (
     <Form

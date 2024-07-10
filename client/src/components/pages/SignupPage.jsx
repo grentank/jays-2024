@@ -1,7 +1,21 @@
 import React, { useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
+import useAppStore from '../../store/store';
+import axiosInstance, { setAccessToken } from '../../axiosInstance';
 
-export default function SignupPage({ handleSignup }) {
+export default function SignupPage() {
+  const setUser = useAppStore((store) => store.setUser);
+  const handleSignup = async (signupData) => {
+    try {
+      const res = await axiosInstance.post('/auth/signup', signupData);
+      setUser(res.data.user);
+      setAccessToken(res.data.accessToken);
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+      alert(error.response.data.message);
+    }
+  };
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -14,7 +28,8 @@ export default function SignupPage({ handleSignup }) {
     <Form
       onSubmit={(e) => {
         e.preventDefault();
-        if (formData.repeat !== formData.password) return alert('Пароли не совпадают');
+        if (formData.repeat !== formData.password)
+          return alert('Пароли не совпадают');
         handleSignup(formData);
       }}
     >
@@ -56,10 +71,16 @@ export default function SignupPage({ handleSignup }) {
           value={formData.repeat}
           onChange={handleChange}
           type="password"
-          isValid={formData.repeat.length > 0 && formData.repeat === formData.password}
-          isInvalid={formData.repeat.length > 0 && formData.repeat !== formData.password}
+          isValid={
+            formData.repeat.length > 0 && formData.repeat === formData.password
+          }
+          isInvalid={
+            formData.repeat.length > 0 && formData.repeat !== formData.password
+          }
         />
-        <Form.Control.Feedback type="invalid">Пароли не совпадают</Form.Control.Feedback>
+        <Form.Control.Feedback type="invalid">
+          Пароли не совпадают
+        </Form.Control.Feedback>
       </Form.Group>
 
       <Button variant="primary" type="submit">

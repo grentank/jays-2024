@@ -3,13 +3,20 @@ import { Button, Card } from 'react-bootstrap';
 import Skeleton from 'react-loading-skeleton';
 import TrashIcon from './TrashIcon';
 import { useLocation } from 'react-router-dom';
+import useAppStore from '../../store/store';
+import axiosInstance from '../../axiosInstance';
 
-export default function ChairCard({
-  user,
-  chair,
-  loading,
-  deleteChairHandler,
-}) {
+export default function ChairCard({ chair, loading }) {
+  const user = useAppStore((store) => store.user);
+  const toggleModal = useAppStore((store) => store.toggleModal);
+  const deleteChairById = useAppStore((store) => store.deleteChairById);
+
+  const deleteChairHandler = async (chairId) => {
+    const res = await axiosInstance.delete(`/chairs/${chairId}`);
+    if (res.status === 204) {
+      deleteChairById(chairId);
+    }
+  };
   const location = useLocation();
   return (
     <Card style={{ width: '18rem' }}>
@@ -42,6 +49,7 @@ export default function ChairCard({
               <TrashIcon />
             </Button>
           )}
+        <Button onClick={toggleModal}>Edit</Button>
       </Card.Body>
     </Card>
   );
